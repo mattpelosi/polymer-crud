@@ -1,0 +1,7 @@
+{
+  "name": "polymer-test-app",
+  "short_name": "polymer-test-app",
+  "description": "api call and styled user profile",
+  "start_url": "/",
+  "display": "standalone"
+}
