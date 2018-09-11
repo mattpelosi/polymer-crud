@@ -1,5 +1,6 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "../components/get-user-button";
+import "../components/user-form";
 import "@polymer/polymer/lib/elements/dom-repeat.js";
 
 /**
@@ -7,10 +8,21 @@ import "@polymer/polymer/lib/elements/dom-repeat.js";
  * @polymer
  */
 class PolymerTestAppApp extends PolymerElement {
-
   ready() {
-    super.ready()
-    this.addEventListener("generate-new-user", e => this.handleClick(e));
+    super.ready();
+    this.addEventListener("get-new-user", e => this.getNewUser(e));
+  }
+
+  static get properties() {
+    return {
+      user: {
+        type: Object
+      },
+      users: {
+        type: Array,
+        value: []
+      }
+    };
   }
 
   static get template() {
@@ -21,36 +33,10 @@ class PolymerTestAppApp extends PolymerElement {
         }
       </style>
 
-
-      <h2>Hello [[prop1]]!</h2>
-
       <get-user-button></get-user-button>
-
-      <img src=[[userData.picture.thumbnail]]>
-      <div class="form">
-        <div class="name">
-          <select class="title" on-change="handleSelect">
-            <option value="">Title</option>
-            <option value="mr">mr</option>
-            <option value="ms">ms</option>
-            <option value="mrs">ms</option>
-          </select>
-          <input type="text" value=[[userData.name.first]]>
-          <input type="text" value=[[userData.name.last]]>
-        </div>
-          <input type="dob" value=[[dob]]>
-        <div class="address">
-          <input type="text" value=[[userData.location.street]]>
-          <input type="text" value=[[userData.location.city]]>
-          <input type="text" value=[[userData.location.state]]>
-          <input type="text" value=[[userData.location.postcode]]>
-        </div>
-        <div class="contact">
-          <input type="email" value=[[userData.email]]>
-          <input type="tel" value=[[userData.cell]] pattern="\d{10,}">
-          <input type="tel" value=[[userData.phone]] pattern="\d{10,}">
-        </div>
-      </div>
+      
+      <user-form user=[[user]] dob=[[dob]] title=[[]]></user-form>
+      
       <div class="usersList">
         <template is="dom-repeat" items="[[users]]">
           <div class="user">
@@ -65,43 +51,41 @@ class PolymerTestAppApp extends PolymerElement {
       </div>
     `;
   }
-  static get properties() {
-    return {
-      prop1: {
-        type: String,
-        value: "polymer-test-app-app"
-      },
-      userData: {
-        type: Array
-      },
-      dob: {
-        type: String
-      },
-      title: {
-        type: String
-      },
-      users: {
-        type: Array,
-        value: []
-      }
-    };
-  }
 
-  async handleClick() {
+  async getNewUser() {
     const data = await fetch("https://randomuser.me/api/?nat=US").then(
       response => {
         return response.json();
       }
     );
-    const userData = data.results[0];
-    this.saveUserDataToLocalStorage(userData);
-    this.dob = this.formatDate(userData.dob.date);
-    this.title = this.setTitle(userData.name.title);
-    this.userData = userData;
+    const user = this.parseNewUserObject(data.results[0]);
+    this.user = user;
+    this.writeUserToLocalStorage(user);
   }
 
-  handleSelect(e) {
-    this.title = e.target.value;
+  parseNewUserObject(user) {
+    const parsedUser = {
+      name: user.name,
+      dob: this.formatDate(user.dob.date),
+      address: {
+        street: user.location.street,
+        city: user.location.city,
+        state: user.location.state,
+        postcode: user.location.postcode
+      },
+      contact: {
+        email: user.email,
+        phone: user.phone,
+        cell: user.cell
+      },
+      id: user.login.uuid,
+      image: user.picture.thumbnail,
+      login: {
+        username: user.login.username,
+        password: user.login.password
+      }
+    };
+    return parsedUser;
   }
 
   formatDate(date) {
@@ -119,41 +103,15 @@ class PolymerTestAppApp extends PolymerElement {
     return formatted;
   }
 
-  setTitle(title) {
-    const select = this.shadowRoot.querySelectorAll(".title option");
-    if (title === "miss") {
-      select["2"].selected = true;
-    } else {
-      for (let option in select) {
-        if (select[option].innerText === title) {
-          select[option].selected = true;
-        }
-      }
-    }
-    return title;
-  }
-
-  saveUserDataToLocalStorage(userData) {
-    const userObj = {
-      name: userData.name,
-      dob: this.formatDate(userData.dob.date),
-      address: userData.location,
-      contact: {
-        email: userData.email,
-        phone: userData.phone,
-        cell: userData.cell
-      },
-      username: userData.login.username,
-      image: userData.picture.thumbnail
-    };
+  writeUserToLocalStorage(user) {
     if (localStorage.users) {
       const users = JSON.parse(localStorage.users);
-      users.push(userObj);
+      users.push(user);
       localStorage.setItem("users", JSON.stringify(users));
     } else {
-      localStorage.setItem("users", JSON.stringify([userObj]));
+      localStorage.setItem("users", JSON.stringify([user]));
     }
-    this.push("users", userObj);
+    this.unshift("users", user);
   }
 
   editUser(event) {
@@ -164,6 +122,7 @@ class PolymerTestAppApp extends PolymerElement {
       }
     }
   }
+
   deleteUser(event) {
     const key = event.target.dataset.item;
     for (let item in this.users) {
