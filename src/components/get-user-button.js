@@ -11,7 +11,7 @@ class getUserButton extends PolymerElement {
   }
   handleClick() {
     this.dispatchEvent(
-      new CustomEvent("generate-new-user", {
+      new CustomEvent("get-new-user", {
         bubbles: true,
         composed: true
       })
