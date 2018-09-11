@@ -7,7 +7,11 @@ class userForm extends PolymerElement {
         type: Object,
         observer: "_receiveNewUser",
         value: {
-          name: "",
+          name: {
+            title: "",
+            first: "",
+            last: ""
+          },
           dob: "",
           address: {
             street: "",
@@ -55,28 +59,29 @@ class userForm extends PolymerElement {
                     <input name="last" type="text" value=[[user.name.last]] on-input="onChange">
                 </div>
             </div>
-            </div class="dob">
+            <div class="dob">
                 <label for="dob">Date of birth:</label>
                 <input name="dob" type="dob" value=[[user.dob]] on-input="onChange">
+            </div>
             <div class="address">
-            <h3>Address</h3>
-            <div>
-                <label for="street">Street:</label>
-                <input name="street" type="text" value=[[user.address.street]] on-input="onChange">
+                <h3>Address</h3>
+                <div>
+                    <label for="street">Street:</label>
+                    <input name="street" type="text" value=[[user.address.street]] on-input="onChange">
+                </div>
+                <div>
+                    <label for="city">City:</label>
+                    <input name="city" type="text" value=[[user.address.city]] on-input="onChange">
+                </div>
+                <div>
+                    <label for="state">State:</label>
+                    <input name="state" type="text" value=[[user.address.state]] on-input="onChange">
+                </div>
+                <div>
+                    <label for"postcode">ZipCode:</label>
+                    <input name="postcode" type="text" value=[[user.address.postcode]] on-input="onChange">
+                </div>
             </div>
-            <div>
-                <label for="city">City:</label>
-                <input name="city" type="text" value=[[user.address.city]] on-input="onChange">
-            </div>
-            <div>
-                <label for="state">State:</label>
-                <input name="state" type="text" value=[[user.address.state]] on-input="onChange">
-            </div>
-            <div>
-                <label for"postcode">ZipCode:</label>
-                <input name="postcode" type="text" value=[[user.address.postcode]] on-input="onChange">
-            </div>
-        
             <div class="contact">
                 <h3>Contact</h3>
                 <div>
@@ -128,15 +133,21 @@ class userForm extends PolymerElement {
 
   findAndSetValue(user, name, val) {
     for (let prop in user) {
+      if (user[prop] === "undefined") {
+        break;
+      }
       if (typeof user[prop] === "string") {
-        if ((prop = name)) {
-          this.user[prop] = val;
-          console.log(val);
+        if (prop === name) {
+          user[prop] = val;
+          console.log(user[prop]);
+          return true;
         }
       } else if (typeof user[prop] === "object") {
-        this.findAndSetValue(user[prop], name, val);
+        const bool = this.findAndSetValue(user[prop], name, val);
+        if (bool) {
+          break;
+        }
       }
-      break;
     }
   }
 }
