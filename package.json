@@ -2,11 +2,16 @@
   "name": "polymer-test-app",
   "description": "api call and styled user profile",
   "dependencies": {
+    "@material/button": "^0.39.1",
+    "@material/mwc-button": "^0.1.2",
     "@polymer/iron-ajax": "^3.0.0-pre.25",
+    "@polymer/paper-button": "^3.0.0-pre.25",
+    "@polymer/paper-elements": "0.0.3",
+    "@polymer/paper-icon-button": "^3.0.0-pre.25",
     "@polymer/polymer": "^3.0.0"
   },
   "devDependencies": {
-    "@webcomponents/webcomponentsjs": "^2.0.0",
+    "@webcomponents/webcomponentsjs": "^2.1.1",
     "wct-browser-legacy": "^1.0.0"
   }
 }
