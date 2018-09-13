@@ -49,6 +49,11 @@ class PolymerTestAppApp extends PolymerElement {
           grid-row: 2;
           grid-column: 2;
         }
+        .get-user-button{
+          grid-row: 1;
+          grid-column: 1 / 3;
+          justify-self: center;
+        }
        
       </style>
       <get-user-button class="get-user-button"></get-user-button>      
