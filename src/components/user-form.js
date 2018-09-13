@@ -141,22 +141,34 @@ class userForm extends PolymerElement {
 
   uploadImage(e) {
     const file = e.target.files[0];
-    const reader = new FileReader();
-    let result;
-
-    reader.onload = function(e) {
-      result = e.target.result;
-    };
-    reader.readAsDataURL(file);
-    this.dispatchEvent(
-      new CustomEvent("upload-image", {
-        bubbles: true,
-        composed: true,
-        detail: {
-          image: result
-        }
+    this.readFileAsText(file)
+      .then(result => {
+        this.dispatchEvent(
+          new CustomEvent("upload-image", {
+            bubbles: true,
+            composed: true,
+            detail: {
+              image: result
+            }
+          })
+        );
       })
-    );
+      .catch(err => {
+        console.log("error uploading file", err);
+      });
+  }
+
+  readFileAsText(file) {
+    const reader = new FileReader();
+    return new Promise((resolve, reject) => {
+      reader.onload = e => {
+        return resolve(reader.result);
+      };
+      reader.onerror = () => {
+        return reject(this);
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
   onChange(e) {

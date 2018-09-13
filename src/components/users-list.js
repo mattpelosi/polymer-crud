@@ -34,7 +34,7 @@ class usersList extends PolymerElement {
             <template is="dom-repeat" items="[[users]]">
                 <div class="user">
                     <img src=[[item.image]]>
-                    <div>
+                    <div class="name">
                         <p>[[item.name.title]]</p>
                         <p>[[item.name.first]]</p>
                         <p>[[item.name.last]]</p>
