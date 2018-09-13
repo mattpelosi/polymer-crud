@@ -1,5 +1,5 @@
 {
-  "name": "polymer-test-app",
+  "name": "polymer-user-crud-app",
   "description": "api call and styled user profile",
   "dependencies": {
     "@material/button": "^0.39.1",
